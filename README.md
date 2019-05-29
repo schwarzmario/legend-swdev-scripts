@@ -11,7 +11,7 @@ Pull these scipts and follow the directions.
 
 Run from inside the legend container to install the full python suite in your directory outside of the container. You need to make sure an external volume is mounted inside the container.  
 
-You need to edit the file and spcify the path to the install directory.
+You need to edit the script after you download it to specify the path to the install directory. See notes inside the script.
 
 
 
