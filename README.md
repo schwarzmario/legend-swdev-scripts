@@ -13,6 +13,19 @@ Run from inside the legend container to install the full python suite in your di
 
 You need to edit the script after you download it to specify the path to the install directory. See notes inside the script.
 
+## installMaGe.py
 
+Installs MGDO, MaGe, and GAT for people with access to those repositories on mppmu. Typical usage:
 
+```
+mkdir [srcdir] [installdir]
+cd [srcdir]
+python /path/to/installMaGe.py [installdir]
+source setup_mage.sh
+python /path/to/installMaGe.py [installdir]
+[enter github credentials 3 times if not automated]
+[wait a while] 
+[add source srcdir/setup_mage.sh to ~/.bashrc]
+```
 
+If something gets up, do `python /path/to/installMaGe.py clean` and try again
