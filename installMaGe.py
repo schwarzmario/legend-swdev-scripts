@@ -92,19 +92,19 @@ try:
 #        subprocess.run(['git', 'clone', 'https://github.com/mppmu/GAT.git'], check=True)
 except subprocess.CalledProcessError:
     sys.exit()
-
+#sys.exit()  # i just want the source now
 # install MGDO
-# edit: more power
+# edit: more power is not good
 os.chdir('MGDO')
 subprocess.run(['./configure', '--prefix='+install_path, '--enable-majorana-all'])
-subprocess.run(['make', '-j5'])
+subprocess.run(['make'])
 subprocess.run(['make', 'install'])
 os.chdir('..')
 
 # install MaGe
 os.chdir('MaGe')
 subprocess.run(['./configure', '--prefix='+install_path, '--disable-g4gdml'])
-subprocess.run(['make', '-j5'])
+subprocess.run(['make'])
 subprocess.run(['make', 'install'])
 os.chdir('..')
 
