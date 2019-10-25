@@ -82,34 +82,36 @@ if not 'G4INSTALL' in os.environ:
 
 
 # download (user will enter password)
+# edit: no GAT
 try:
     if not os.path.exists('MGDO'):
         subprocess.run(['git', 'clone', 'https://github.com/mppmu/MGDO.git'], check=True)
     if not os.path.exists('MaGe'):
         subprocess.run(['git', 'clone', 'https://github.com/mppmu/MaGe.git'], check=True)
-    if not os.path.exists('GAT'):
-        subprocess.run(['git', 'clone', 'https://github.com/mppmu/GAT.git'], check=True)
+#    if not os.path.exists('GAT'):
+#        subprocess.run(['git', 'clone', 'https://github.com/mppmu/GAT.git'], check=True)
 except subprocess.CalledProcessError:
     sys.exit()
 
 # install MGDO
+# edit: more power
 os.chdir('MGDO')
 subprocess.run(['./configure', '--prefix='+install_path, '--enable-majorana-all'])
-subprocess.run(['make'])
+subprocess.run(['make', '-j5'])
 subprocess.run(['make', 'install'])
 os.chdir('..')
 
 # install MaGe
 os.chdir('MaGe')
 subprocess.run(['./configure', '--prefix='+install_path, '--disable-g4gdml'])
-subprocess.run(['make'])
+subprocess.run(['make', '-j5'])
 subprocess.run(['make', 'install'])
 os.chdir('..')
 
-# install GAT
-os.chdir('GAT')
-subprocess.run(['make'])
-os.chdir('..')
+# no install GAT
+#os.chdir('GAT')
+#subprocess.run(['make'])
+#os.chdir('..')
 
 print('Installation complete. If desired, add the following line to your login script.')
 print('source', pwd + '/setup_mage.sh')
