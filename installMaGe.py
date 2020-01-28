@@ -68,6 +68,7 @@ if not 'G4INSTALL' in os.environ:
         file.write('export MGDODIR=' + pwd + '/MGDO\n')
         file.write('export TAMDIR=$MGDODIR/tam\n')
         file.write('export MAGEDIR=' + pwd + '/MaGe\n')
+        file.write('export MGGENERATORDATA=' + pwd + '/MaGe/generators/data\n')
         file.write('export GATDIR=' + pwd + '/GAT\n')
         file.write('export PATH=' + install_path + '/bin:$GATDIR/Apps:$PATH\n')
         file.write('export LD_LIBRARY_PATH=' + install_path + '/lib:' + gatlibs + ':$TAMDIR/lib:$LD_LIBRARY_PATH\n')
