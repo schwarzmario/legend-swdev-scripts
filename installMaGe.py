@@ -52,6 +52,17 @@ os.makedirs(args.buildpath, exist_ok=True)
 os.chdir(args.buildpath)
 pwd = os.getcwd()
 
+# determine install_path 
+install_path = args.installpath if args.installpath else pwd
+if not os.path.isdir(install_path):
+    print(install_path, 'is not an existing directory')
+    print(usage)
+    sys.exit()
+
+# make absolutely sure necessary variables are set for (un)installation
+os.environ['MGDODIR']=pwd+'/MGDO'
+os.environ['PATH']=install_path+'/bin:'+os.environ['PATH']
+
 # clean up if desired
 if args.command == 'clean' or args.command == 'reinstall':
     if os.path.exists('mage-post-proc/Makefile'):
@@ -59,8 +70,8 @@ if args.command == 'clean' or args.command == 'reinstall':
         subprocess.run(['make', 'uninstall'])
         os.chdir('..')
     if os.path.exists('MaGe/build/install_manifest.txt'):
-      #subprocess.run(['make', 'uninstall'])
-      subprocess.run('xargs rm < MaGe/build/install_manifest.txt'.split())
+        subprocess.run('xargs -L1 rm -vf'.split(), stdin=open('MaGe/build/install_manifest.txt'))
+        subprocess.run('rm -vf Mage/build/install_manifest.txt'.split())
     if os.path.exists('MGDO/Makefile'):
         os.chdir('MGDO')
         subprocess.run(['make', 'uninstall'])
@@ -68,13 +79,6 @@ if args.command == 'clean' or args.command == 'reinstall':
     subprocess.run(['rm', '-rf', 'MGDO', 'MaGe', 'mage-post-proc', 'setup_mage.sh'])
     if args.command == 'clean':
         sys.exit()
-
-# determine install_path 
-install_path = args.installpath if args.installpath else pwd
-if not os.path.isdir(install_path):
-    print(install_path, 'is not an existing directory')
-    print(usage)
-    sys.exit()
 
 # find CLHEP
 try:
@@ -105,10 +109,6 @@ with open('setup_mage.sh', 'w') as file:
                f'{install_path}/include/mage-post-proc:' \
                '${ROOT_INCLUDE_PATH}\n')
     file.write(f'export PYTHONPATH={install_path}/lib:$PYTHONPATH\n')
-
-# make absolutely sure necessary variables are set for installation
-os.environ['MGDODIR']=pwd+'/MGDO'
-os.environ['PATH']=install_path+'/bin:'+os.environ['PATH']
 
 # download (user will enter password)
 try:
