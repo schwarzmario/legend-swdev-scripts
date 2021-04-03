@@ -99,6 +99,7 @@ with open('setup_mage.sh', 'w') as file:
     file.write(f'export TAMDIR=$MGDODIR/tam\n')
     file.write(f'export MAGEDIR={pwd}/MaGe/build\n')
     file.write(f'export MGGENERATORDATA={pwd}/share/MaGe/generators\n')
+    file.write(f'export MGGERDAGEOMETRY={pwd}/share/MaGe/gerdageometry\n')
     file.write(f'export MPPDIR={pwd}/mage-post-proc\n')
     file.write(f'export PATH={install_path}/bin:$PATH\n')
     file.write(f'export LD_LIBRARY_PATH={install_path}/lib:$LD_LIBRARY_PATH\n')
