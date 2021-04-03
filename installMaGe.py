@@ -30,7 +30,7 @@ parser.add_argument('-b', '--buildpath', type=str, default='.',
                     help="Base path to build software in")
 parser.add_argument('-i', '--installpath', type=str,
                     help="Base path to install software in. By default use the build path.")
-parser.add_argument('-j', '--jobs', type=int,
+parser.add_argument('-j', '--jobs', type=int, default=1,
                     help="Number of threads to run with Make")
 
 parser.add_argument('--mgdofork', type=str, default='mppmu',
@@ -67,14 +67,14 @@ os.environ['PATH']=install_path+'/bin:'+os.environ['PATH']
 if args.command == 'clean' or args.command == 'reinstall':
     if os.path.exists('mage-post-proc/Makefile'):
         os.chdir('mage-post-proc')
-        subprocess.run(['make', 'uninstall'])
+        subprocess.run(['make', 'uninstall', '-j1'])
         os.chdir('..')
     if os.path.exists('MaGe/build/install_manifest.txt'):
         subprocess.run('xargs -L1 rm -vf'.split(), stdin=open('MaGe/build/install_manifest.txt'))
         subprocess.run('rm -vf Mage/build/install_manifest.txt'.split())
     if os.path.exists('MGDO/Makefile'):
         os.chdir('MGDO')
-        subprocess.run(['make', 'uninstall'])
+        subprocess.run(['make', 'uninstall', '-j1'])
         os.chdir('..')
     subprocess.run(['rm', '-rf', 'MGDO', 'MaGe', 'mage-post-proc', 'setup_mage.sh'])
     if args.command == 'clean':
@@ -124,21 +124,25 @@ except subprocess.CalledProcessError:
 # install MGDO
 os.chdir('MGDO')
 subprocess.run(f'./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree'.split())
-subprocess.run(['make'])
-subprocess.run(['make', 'install'])
+subprocess.run(['make', f'-j{args.jobs}'])
+if args.jobs>1:
+    subprocess.run(['make', '-j1']) # make -j>1 doesn't always succeed
+subprocess.run(['make', 'install', '-j1'])
 os.chdir('..')
 
 # install MaGe
 subprocess.run(f'cmake -S MaGe/source -B MaGe/build -DCMAKE_INSTALL_PREFIX={install_path}'.split())
 os.chdir('MaGe/build')
-subprocess.run(['make'] + (['-j', str(args.jobs)] if args.jobs else []) )
-subprocess.run(['make', 'install'])
+subprocess.run(['make', f'-j{args.jobs}'])
+subprocess.run(['make', 'install', '-j1'])
 os.chdir('../..')
 
 # install mage-post-proc
 os.chdir('mage-post-proc')
-subprocess.run(['make'])
-subprocess.run(['make', 'install'])
+subprocess.run(['make', f'-j{args.jobs}'])
+if args.jobs>1:
+    subprocess.run(['make', '-j1']) # make -j>1 doesn't always succeed
+subprocess.run(['make', 'install', '-j1'])
 os.chdir(original_pwd)
 
 print('Installation complete. If desired, add the following line to your login script.')
