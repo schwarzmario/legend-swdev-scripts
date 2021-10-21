@@ -57,6 +57,11 @@ os.makedirs(args.buildpath, exist_ok=True)
 os.chdir(args.buildpath)
 pwd = os.getcwd()
 
+# helper function to run command line commands. Print command, then run it, and raise errors on failure
+def cmd(command):
+    print(command)
+    subprocess.run(command.split(), check=True)
+
 # determine install_path 
 install_path = args.installpath if args.installpath else pwd
 if not os.path.isdir(install_path):
@@ -121,34 +126,34 @@ try:
     address = 'git@github.com:' if args.authentication=='ssh' else\
               'https://github.com/'
     if not os.path.exists('MGDO'):
-        subprocess.run(f'git clone -b {args.mgdobranch} {address}{args.mgdofork}/MGDO.git'.split(), check=True)
+        cmd(f'git clone -b {args.mgdobranch} {address}{args.mgdofork}/MGDO.git')
     if not os.path.exists('MaGe'):
-        subprocess.run(f'git clone -b {args.magebranch} {address}{args.magefork}/MaGe.git MaGe/source'.split(), check=True)
+        cmd(f'git clone -b {args.magebranch} {address}{args.magefork}/MaGe.git MaGe/source')
     if not os.path.exists('mage-post-proc'):
-        subprocess.run(f'git clone -b {args.mppbranch} {address}{args.mppfork}/mage-post-proc.git'.split(), check=True)
+        cmd(f'git clone -b {args.mppbranch} {address}{args.mppfork}/mage-post-proc.git')
 except subprocess.CalledProcessError:
     sys.exit()
     
 # install MGDO
 os.chdir('MGDO')
-subprocess.run(f'./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree'.split(), check=True)
-subprocess.run(f'make svninfo static -j{args.jobs}'.split(), check=True)
-subprocess.run('make', check=True)
-subprocess.run('make install'.split(), check=True)
+cmd(f'./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree')
+cmd(f'make svninfo static -j{args.jobs}')
+cmd('make')
+cmd('make install')
 os.chdir('..')
 
 # install MaGe
-subprocess.run(f'cmake -S MaGe/source -B MaGe/build -DCMAKE_INSTALL_PREFIX={install_path}'.split(), check=True)
+cmd(f'cmake -S MaGe/source -B MaGe/build -DCMAKE_INSTALL_PREFIX={install_path}')
 os.chdir('MaGe/build')
-subprocess.run(f'make -j{args.jobs}'.split(), check=True)
-subprocess.run('make install'.split(), check=True)
+cmd(f'make -j{args.jobs}')
+cmd('make install')
 os.chdir('../..')
 
 # install mage-post-proc
 os.chdir('mage-post-proc')
-subprocess.run(f'make -j{args.jobs} gitrev siggen static'.split(), check=True)
-subprocess.run('make', check=True)
-subprocess.run('make install'.split(), check=True)
+cmd(f'make -j{args.jobs} gitrev siggen static')
+cmd('make')
+cmd('make install')
 os.chdir(original_pwd)
 
 print('Installation complete. If desired, add the following line to your login script.')
