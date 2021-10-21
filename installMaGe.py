@@ -124,26 +124,24 @@ except subprocess.CalledProcessError:
     
 # install MGDO
 os.chdir('MGDO')
-subprocess.run(f'./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree'.split())
-subprocess.run(['make', f'-j{args.jobs}'])
-if args.jobs>1:
-    subprocess.run(['make', '-j1']) # make -j>1 doesn't always succeed
-subprocess.run(['make', 'install', '-j1'])
+subprocess.run(f'./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree'.split(), check=True)
+subprocess.run(f'make svninfo static -j{args.jobs}'.split(), check=True)
+subprocess.run('make', check=True)
+subprocess.run('make install'.split(), check=True)
 os.chdir('..')
 
 # install MaGe
-subprocess.run(f'cmake -S MaGe/source -B MaGe/build -DCMAKE_INSTALL_PREFIX={install_path}'.split())
+subprocess.run(f'cmake -S MaGe/source -B MaGe/build -DCMAKE_INSTALL_PREFIX={install_path}'.split(), check=True)
 os.chdir('MaGe/build')
-subprocess.run(['make', f'-j{args.jobs}'])
-subprocess.run(['make', 'install', '-j1'])
+subprocess.run(f'make -j{args.jobs}'.split(), check=True)
+subprocess.run('make install'.split(), check=True)
 os.chdir('../..')
 
 # install mage-post-proc
 os.chdir('mage-post-proc')
-subprocess.run(['make', f'-j{args.jobs}'])
-if args.jobs>1:
-    subprocess.run(['make', '-j1']) # make -j>1 doesn't always succeed
-subprocess.run(['make', 'install', '-j1'])
+subprocess.run(f'make -j{args.jobs} gitrev siggen static'.split(), check=True)
+subprocess.run('make', check=True)
+subprocess.run('make install'.split(), check=True)
 os.chdir(original_pwd)
 
 print('Installation complete. If desired, add the following line to your login script.')
