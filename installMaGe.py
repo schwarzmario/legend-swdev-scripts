@@ -30,6 +30,11 @@ parser.add_argument('-b', '--buildpath', type=str, default='.',
                     help="Base path to build software in")
 parser.add_argument('-i', '--installpath', type=str,
                     help="Base path to install software in. By default use the build path.")
+parser.add_argument('-a', '--authentication', type=str,
+                    choices=['ssh', 'https'], default='ssh',
+                    help="""github authentication method. Options:
+                        ssh: ssh-rsa key
+                        https: personal access token""")
 parser.add_argument('-j', '--jobs', type=int, default=1,
                     help="Number of threads to run with Make")
 
@@ -113,12 +118,14 @@ with open('setup_mage.sh', 'w') as file:
 
 # download (user will enter password)
 try:
+    address = 'git@github.com:' if args.authentication=='ssh' else\
+              'https://github.com/'
     if not os.path.exists('MGDO'):
-        subprocess.run(f'git clone -b {args.mgdobranch} https://github.com/{args.mgdofork}/MGDO.git'.split(), check=True)
+        subprocess.run(f'git clone -b {args.mgdobranch} {address}{args.mgdofork}/MGDO.git'.split(), check=True)
     if not os.path.exists('MaGe'):
-        subprocess.run(f'git clone -b {args.magebranch} https://github.com/{args.magefork}/MaGe.git MaGe/source'.split(), check=True)
+        subprocess.run(f'git clone -b {args.magebranch} {address}{args.magefork}/MaGe.git MaGe/source'.split(), check=True)
     if not os.path.exists('mage-post-proc'):
-        subprocess.run(f'git clone -b {args.mppbranch} https://github.com/{args.mppfork}/mage-post-proc.git'.split(), check=True)
+        subprocess.run(f'git clone -b {args.mppbranch} {address}{args.mppfork}/mage-post-proc.git'.split(), check=True)
 except subprocess.CalledProcessError:
     sys.exit()
     
