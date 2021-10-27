@@ -17,7 +17,7 @@ Installs MGDO, MaGe, and GAT for people with access to those repositories on [mp
 ```console
 $ mkdir [installdir]
 $ python installMaGe.py --help # for help
-$ python3 installMaGe.py install --magebranch cmake -i [installdir] -j8 # for example
+$ python installMaGe.py install --magebranch cmake -i [installdir] -j8 # for example
 $ echo "$PWD/setup_mage.sh" ~/.bashrc
 ```
 
