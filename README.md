@@ -1,7 +1,7 @@
 # LEGEND Software Developer Scripts
 
-This repository will hold scripts that will install softare for use with a legend container. 
-See https://github.com/legend-exp/legendexp_legend-base_img for example.
+This repository will hold scripts that will install softare for use with a legend container.
+See [legend-exp/legendexp_legend-base_img](https://github.com/legend-exp/legendexp_legend-base_img) for example.
 
 ## Getting Started
 
@@ -15,17 +15,13 @@ You need to edit the script after you download it to specify the path to the ins
 
 ## installMaGe.py
 
-Installs MGDO, MaGe, and GAT for people with access to those repositories on mppmu. Typical usage:
+Installs MGDO, MaGe, and GAT for people with access to those repositories on [mppmu](https://github.com/mppmu). Typical usage:
 
-```
-mkdir [srcdir] [installdir]
-cd [srcdir]
-python /path/to/installMaGe.py [installdir]
-source setup_mage.sh
-python /path/to/installMaGe.py [installdir]
-[enter github credentials 3 times if not automated]
-[wait a while] 
-[add source srcdir/setup_mage.sh to ~/.bashrc]
+```console
+$ mkdir [installdir]
+$ python installMaGe.py --help # for help
+$ python3 installMaGe.py install --magebranch cmake -i [installdir] -j8 # for example
+$ echo "$PWD/setup_mage.sh" ~/.bashrc
 ```
 
-If something gets up, do `python /path/to/installMaGe.py clean` and try again
+If something gets up, do `python installMaGe.py clean` and try again
