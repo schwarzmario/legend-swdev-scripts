@@ -60,7 +60,13 @@ pwd = os.getcwd()
 # helper function to run command line commands. Print command, then run it, and raise errors on failure
 def cmd(command):
     print(command)
-    subprocess.run(command.split(), check=True)
+    subprocess.run(command, shell=True, check=True)
+
+# Disable conda for configure/cmake steps if needed
+preconfigure = ''
+if os.path.exists(os.path.join(sys.prefix, 'conda-meta')):
+    print("Disabling conda for configure steps...")
+    preconfigure = 'source disable-conda.sh; '
 
 # determine install_path 
 install_path = args.installpath if args.installpath else pwd
@@ -136,14 +142,14 @@ except subprocess.CalledProcessError:
     
 # install MGDO
 os.chdir('MGDO')
-cmd(f'./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree')
+cmd(f'{preconfigure}./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree')
 cmd(f'make svninfo static -j{args.jobs}')
 cmd('make')
 cmd('make install')
 os.chdir('..')
 
 # install MaGe
-cmd(f'cmake -S MaGe/source -B MaGe/build -DCMAKE_CXX_STANDARD=14 -DCMAKE_INSTALL_PREFIX={install_path}')
+cmd(f'{preconfigure}cmake -S MaGe/source -B MaGe/build -DCMAKE_CXX_STANDARD=14 -DCMAKE_INSTALL_PREFIX={install_path}')
 os.chdir('MaGe/build')
 cmd(f'make -j{args.jobs}')
 cmd('make install')
