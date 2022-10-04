@@ -44,11 +44,11 @@ parser.add_argument('--mgdobranch', type=str, default='master',
                     help="Git branch to install MGDO from")
 parser.add_argument('--magefork', type=str, default='mppmu',
                     help="Github fork to install MaGe from")
-parser.add_argument('--magebranch', type=str, default='master',
+parser.add_argument('--magebranch', type=str, default='main',
                     help="Git branch to install MaGe from")
 parser.add_argument('--mppfork', type=str, default='legend-exp',
                     help="Github fork to install MPP from")
-parser.add_argument('--mppbranch', type=str, default='master',
+parser.add_argument('--mppbranch', type=str, default='main',
                     help="Git branch to install MPP from")
 args = parser.parse_args()
 
