@@ -149,7 +149,10 @@ cmd('make install')
 os.chdir('..')
 
 # install MaGe
-cmd(f'{preconfigure}cmake -S MaGe/source -B MaGe/build -DCMAKE_CXX_STANDARD=14 -DCMAKE_INSTALL_PREFIX={install_path}')
+root_cflags = subprocess.check_output("root-config --cflags".split()).decode("utf-8")
+cppstd = re.search("-std=c\+\+(\d*)", root_cflags)
+cppstd = f"-DCMAKE_CXX_STANDARD={cppstd.group(1)}" if cppstd else ""
+cmd(f'{preconfigure}cmake -S MaGe/source -B MaGe/build {cppstd} -DCMAKE_INSTALL_PREFIX={install_path}')
 os.chdir('MaGe/build')
 cmd(f'make -j{args.jobs}')
 cmd('make install')
