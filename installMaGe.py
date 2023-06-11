@@ -50,6 +50,7 @@ parser.add_argument('--mppfork', type=str, default='legend-exp',
                     help="Github fork to install MPP from")
 parser.add_argument('--mppbranch', type=str, default='main',
                     help="Git branch to install MPP from")
+
 args = parser.parse_args()
 
 original_pwd = os.getcwd()
@@ -81,10 +82,9 @@ os.environ['PATH']=install_path+'/bin:'+os.environ['PATH']
 
 # clean up if desired
 if args.command == 'clean' or args.command == 'reinstall':
-    if os.path.exists('mage-post-proc/Makefile'):
-        os.chdir('mage-post-proc')
-        subprocess.run(['make', 'uninstall', '-j1'])
-        os.chdir('..')
+    if os.path.exists('mage-post-proc/build/install_manifest.txt'):
+        subprocess.run('xargs -L1 rm -vf'.split(), stdin=open('mage-post-proc/build/install_manifest.txt'))
+        subprocess.run('rm -vf mage-post-proc/build/install_manifest.txt'.split())
     if os.path.exists('MaGe/build/install_manifest.txt'):
         subprocess.run('xargs -L1 rm -vf'.split(), stdin=open('MaGe/build/install_manifest.txt'))
         subprocess.run('rm -vf Mage/build/install_manifest.txt'.split())
@@ -136,10 +136,10 @@ try:
     if not os.path.exists('MaGe'):
         cmd(f'git clone -b {args.magebranch} {address}{args.magefork}/MaGe.git MaGe/source')
     if not os.path.exists('mage-post-proc'):
-        cmd(f'git clone -b {args.mppbranch} {address}{args.mppfork}/mage-post-proc.git')
+        cmd(f'git clone -b {args.mppbranch} {address}{args.mppfork}/mage-post-proc.git mage-post-proc/mage-post-proc')
 except subprocess.CalledProcessError:
     sys.exit()
-    
+
 # install MGDO
 os.chdir('MGDO')
 cmd(f'{preconfigure}./configure --prefix={install_path} --enable-streamers --enable-tam --enable-tabree')
@@ -160,9 +160,8 @@ os.chdir('../..')
 
 # install mage-post-proc
 os.chdir('mage-post-proc')
-cmd(f'make -j{args.jobs} gitrev siggen static')
-cmd('make')
-cmd('make install')
+cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path}')
+cmd(f'make -C build -j{args.jobs} install')
 os.chdir(original_pwd)
 
 print('Installation complete. If desired, add the following line to your login script.')
