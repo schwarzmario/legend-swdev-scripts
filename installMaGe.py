@@ -127,7 +127,7 @@ with open('setup_mage.sh', 'w') as file:
                f'{install_path}/include/mage:' \
                f'{install_path}/include/mage-post-proc:' \
                '${ROOT_INCLUDE_PATH}\n')
-    file.write(f'export PYTHONPATH={install_path}/lib:$PYTHONPATH\n')
+    file.write(f'export PYTHONPATH={install_path}/lib:{install_path}/lib/magepostproc:$PYTHONPATH\n')
 
 # download (user will enter password)
 try:
