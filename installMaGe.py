@@ -118,9 +118,11 @@ with open('setup_mage.sh', 'w') as file:
     file.write(f'source {g4path}geant4make/geant4make.sh\n')
     file.write(f'export MGDODIR={pwd}/MGDO\n')
     file.write(f'export TAMDIR=$MGDODIR/tam\n')
-    file.write(f'export MAGEDIR={pwd}/MaGe/build\n')
-    file.write(f'export MGGENERATORDATA={pwd}/share/MaGe/generators\n')
-    file.write(f'export MGGERDAGEOMETRY={pwd}/share/MaGe/gerdageometry\n')
+    file.write(f'export MAGEDIR={pwd}/MaGe\n')
+    file.write(f'export MGGENERATORDATA=$MAGEDIR/data/generators\n')
+    file.write(f'export MGGERDAGEOMETRY=$MAGEDIR/data/gerdageometry\n')
+    file.write(f'export MESHFILESPATH=$MAGEDIR/data/legendgeometry/stl_files\n')
+    file.write(f'export MAGERESULTS=$MAGEDIR/data/legendgeometry\n')
     file.write(f'export MPPDIR={pwd}/mage-post-proc\n')
     file.write(f'export PATH={install_path}/bin:$PATH\n')
     file.write(f'export LD_LIBRARY_PATH={install_path}/lib:$LD_LIBRARY_PATH\n')
@@ -130,6 +132,7 @@ with open('setup_mage.sh', 'w') as file:
                f'{install_path}/include/mage:' \
                f'{install_path}/include/mage-post-proc:' \
                '${ROOT_INCLUDE_PATH}\n')
+
     file.write(f'export PYTHONPATH={install_path}/lib/magepostproc:$PYTHONPATH\n')
 
 # download (user will enter password)
@@ -161,7 +164,10 @@ cmd(f'{preconfigure}cmake -S MaGe/source -B MaGe/build {cppstd} -DCMAKE_INSTALL_
 os.chdir('MaGe/build')
 cmd(f'make -j{args.jobs}')
 cmd('make install')
-os.chdir('../..')
+os.chdir("../source/data/legendgeometry")
+cmd("ln -s . config_files")
+cmd("ln -s ../../source/legendgeometry/stl_files .")
+os.chdir(original_pwd)
 
 # install mage-post-proc
 mpp_cmake_opts = ''
@@ -177,4 +183,3 @@ os.chdir(original_pwd)
 
 print('Installation complete. If desired, add the following line to your login script.')
 print('source', pwd + '/setup_mage.sh')
-
