@@ -51,6 +51,11 @@ parser.add_argument('--mppfork', type=str, default='legend-exp',
 parser.add_argument('--mppbranch', type=str, default='main',
                     help="Git branch to install MPP from")
 
+parser.add_argument('--pipinstallglobal',  action='store_true', default=False,
+                    help="Install magepostproc module to global site-packages")
+parser.add_argument('--pipinstalluser',  action='store_true', default=False,
+                    help="Install magepostproc module to user site-packages")
+
 args = parser.parse_args()
 
 original_pwd = os.getcwd()
@@ -127,7 +132,8 @@ with open('setup_mage.sh', 'w') as file:
                f'{install_path}/include/mage:' \
                f'{install_path}/include/mage-post-proc:' \
                '${ROOT_INCLUDE_PATH}\n')
-    file.write(f'export PYTHONPATH={install_path}/lib:{install_path}/lib/magepostproc:$PYTHONPATH\n')
+
+    file.write(f'export PYTHONPATH={install_path}/lib/magepostproc:$PYTHONPATH\n')
 
 # download (user will enter password)
 try:
@@ -164,11 +170,16 @@ cmd("ln -s ../../source/legendgeometry/stl_files .")
 os.chdir(original_pwd)
 
 # install mage-post-proc
+mpp_cmake_opts = ''
+if(args.pipinstallglobal):
+    mpp_cmake_opts += f" -DPYTHON_EXE={sys.executable} -DPIP_GLOBAL_INSTALL=ON"
+if(args.pipinstalluser):
+    mpp_cmake_opts += f" -DPYTHON_EXE={sys.executable} -DPIP_USER_INSTALL=ON"
+
 os.chdir('mage-post-proc')
-cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path}')
-cmd(f'make -C build -j{args.jobs} install')
+cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path} {mpp_cmake_opts}')
+cmd(f'make -Cbuild -j{args.jobs} install')
 os.chdir(original_pwd)
 
 print('Installation complete. If desired, add the following line to your login script.')
 print('source', pwd + '/setup_mage.sh')
-
