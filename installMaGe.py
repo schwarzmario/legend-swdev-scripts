@@ -165,9 +165,9 @@ os.chdir('MaGe/build')
 cmd(f'make -j{args.jobs}')
 cmd('make install')
 os.chdir("../source/data/legendgeometry")
-cmd("ln -s . config_files")
-cmd("ln -s ../../source/legendgeometry/stl_files .")
-os.chdir(original_pwd)
+cmd("ln -fns . config_files")
+cmd("ln -fns ../../source/legendgeometry/stl_files .")
+os.chdir(pwd)
 
 # install mage-post-proc
 mpp_cmake_opts = ''
@@ -176,6 +176,7 @@ if(args.pipinstallglobal):
 if(args.pipinstalluser):
     mpp_cmake_opts += f" -DPYTHON_EXE={sys.executable} -DPIP_USER_INSTALL=ON"
 
+cmd("pwd")
 os.chdir('mage-post-proc')
 cmd(f'{preconfigure}cmake -S mage-post-proc -B build -DCMAKE_INSTALL_PREFIX={install_path} {mpp_cmake_opts}')
 cmd(f'make -Cbuild -j{args.jobs} install')
